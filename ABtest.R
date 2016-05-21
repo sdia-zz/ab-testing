@@ -19,48 +19,58 @@ test_data$n_A <- rbinom(1, test_data$N_A, theta$A)
 test_data$N_B <- 210
 test_data$n_B <- rbinom(1, test_data$N_B, theta$B)
 
+####################################
+### A/B TEST WITH UNIFORM PRIORS ###
+####################################
+
 # Create ABtest.stan, check compile, and run model
 
-stanc("ABtest.stan")
-fit <- stan("ABtest.stan", data = test_data, chains = 4, iter = 2000)
-traceplot(fit)
-print(fit)
+stanc("ABtest_uni.stan")
+fit1 <- stan("ABtest_uni.stan", data = test_data, chains = 4, iter = 2000)
+traceplot(fit1)
+print(fit1)
 
 # Extract parameter distributions
 
-fit_extract <- extract(fit)
-post <- list()
-post$theta_A <- fit_extract$theta_A
-post$theta_B <- fit_extract$theta_B
-post$delta <- fit_extract$delta
+fit1_extract <- extract(fit1)
+post1 <- list()
+post1$theta_A <- fit1_extract$theta_A
+post1$theta_B <- fit1_extract$theta_B
+post1$delta <- fit1_extract$delta
 
 # Plot
 
 path <- getwd()
 
-png(filename = paste0(path,"/images/post_plot.png"), width = 2000, height = 600, pointsize = 35, res = 85)
-par(mfrow=c(1,3))
+png(filename = paste0(path,"/images/plot_uni.png"), width = 2000, height = 600, pointsize = 35, res = 85)
+par(mfrow=c(1,3), oma = c(0,0,2,0))
 
-hist(post$theta_A, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", theta["A"])), xlab = expression(theta["A"]))
-abline(v=mean(post$theta_A), col = "red", lwd = 2)
-text(0.15,250,bquote(theta["A"] ~ "=" ~ .(round(mean(post$theta_A),3))))
+hist(post1$theta_A, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", theta["A"])), xlab = expression(theta["A"]), xlim = c(0,0.2))
+abline(v=mean(post1$theta_A), col = "red", lwd = 2)
+text(0.17,200,bquote(theta["A"] ~ "=" ~ .(round(mean(post1$theta_A),3))), cex = 0.7)
 
-hist(post$theta_B, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", theta["B"])), xlab = expression(theta["B"]))
-abline(v=mean(post$theta_B), col = "red", lwd = 2)
-text(0.10,150,bquote(theta["B"] ~ "=" ~ .(round(mean(post$theta_B),3))))
+hist(post1$theta_B, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", theta["B"])), xlab = expression(theta["B"]), xlim = c(0,0.2))
+abline(v=mean(post1$theta_B), col = "red", lwd = 2)
+text(0.15,200,bquote(theta["B"] ~ "=" ~ .(round(mean(post1$theta_B),3))), cex = 0.7)
 
-hist(post$delta, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", delta)), xlab = expression(delta))
-abline(v=mean(post$delta), col = "red", lwd = 2)
-text(0.10,150,bquote(delta ~ "=" ~ .(round(mean(post$delta),3))))
+hist(post1$delta, col = "grey", breaks = 50, border = "white", main = expression(paste("Histogram of ", delta)), xlab = expression(delta), xlim = c(-0.1,0.2))
+abline(v=mean(post1$delta), col = "red", lwd = 2)
+abline(v=0, lty = 2, lwd = 2)
+text(0.15,200,bquote(delta ~ "=" ~ .(round(mean(post1$delta),3))), cex = 0.7)
+
+mtext("A/B Testing with Uninformative (Uniform) Priors", outer = TRUE, cex = 0.8)
 
 dev.off()
 
 # Probability that A is prefered to B and vice versa
 
-post$prob <- c(
-  length(post$delta[which(post$delta==0)]),
-  length(post$delta[which(post$delta<0)]),
-  length(post$delta[which(post$delta>0)])
+post1$prob <- c(
+  length(post1$delta[which(post1$delta==0)]),
+  length(post1$delta[which(post1$delta<0)]),
+  length(post1$delta[which(post1$delta>0)])
   )
 
-prop.table(post$prob)
+# Element 1 => no preference
+# Element 2 => B preferred
+# Element 3 => A preferred
+prop.table(post1$prob)
