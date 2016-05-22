@@ -106,7 +106,7 @@ abline(v=mean(post2$delta), col = "red", lwd = 2)
 abline(v=0, lty = 2, lwd = 2)
 text(0.15,200,bquote(delta ~ "=" ~ .(round(mean(post2$delta),3))), cex = 0.7)
 
-mtext("A/B Testing with Uninformative (Beta & Normal) Priors", outer = TRUE, cex = 0.8)
+mtext("A/B Testing with Informative (Beta & Normal) Priors", outer = TRUE, cex = 0.8)
 
 dev.off()
 
