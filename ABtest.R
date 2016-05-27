@@ -6,6 +6,9 @@
 
 library(rstan)
 
+path <- paste0(getwd(), "/Desktop/git/ab-testing")
+setwd(path)
+
 # Specify true parameters
 theta <- list()
 theta$A <- 0.10
@@ -40,8 +43,6 @@ post1$delta <- fit1_extract$delta
 
 # Plot
 
-path <- getwd()
-
 png(filename = paste0(path,"/images/plot_uni.png"), width = 2000, height = 600, pointsize = 35, res = 85)
 par(mfrow=c(1,3), oma = c(0,0,2,0))
 
@@ -71,8 +72,8 @@ post1$prob <- c(
   )
 
 # Element 1 => no preference
-# Element 2 => B preferred
-# Element 3 => A preferred
+# Element 2 => version B better
+# Element 3 => version A better
 prop.table(post1$prob)
 
 #################################
@@ -99,7 +100,7 @@ text(0.17,200,bquote(theta["A"] ~ "=" ~ .(round(mean(post2$theta_A),3))), cex = 
 
 hist(post2$theta_B, col = "grey", breaks = 50, border = "white", main = expression(paste("Distribution of ", theta["B"])), xlab = expression(theta["B"]), xlim = c(0,0.2))
 abline(v=mean(post2$theta_B), col = "red", lwd = 2)
-text(0.15,200,bquote(theta["B"] ~ "=" ~ .(round(mean(post2$theta_B),3))), cex = 0.7)
+text(0.15,150,bquote(theta["B"] ~ "=" ~ .(round(mean(post2$theta_B),3))), cex = 0.7)
 
 hist(post2$delta, col = "grey", breaks = 50, border = "white", main = expression(paste("Distribution of ", delta)), xlab = expression(delta), xlim = c(-0.1,0.2))
 abline(v=mean(post2$delta), col = "red", lwd = 2)

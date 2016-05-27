@@ -17,5 +17,5 @@ model {
 	n_B ~ binomial(N_B, theta_B);
 	theta_A ~ beta(1, 2);
 	theta_B ~ beta(1, 2);
-	delta ~ normal(0, 10);
+	delta ~ normal(0, 1);
 }
